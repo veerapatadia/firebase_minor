@@ -7,6 +7,8 @@ Welcome to Chat App—a versatile messaging platform designed for seamless commu
 Key Features:
 Sign In & Sign Up: Easily create an account or log in to your existing account with a simple and secure sign-in process.
 
+Built with Firebase: Enjoy a robust backend that ensures real-time communication and reliable data storage, enhancing the overall performance and security of your app.
+
 Google Login: Quick access with Google authentication for added convenience.
 
 Guest Login: Join the conversation instantly without the need for an account—perfect for quick chats.
