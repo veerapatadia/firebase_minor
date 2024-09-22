@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../helper/Auth_Helper.dart';
+import '../provider/themeprovider.dart';
 
 class My_Drawer extends StatefulWidget {
   final User user;
@@ -41,13 +43,13 @@ class _My_DrawerState extends State<My_Drawer> {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.black,
+              color: Color(0xff0B2F9F),
             ),
             margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
             child: Container(
               width: double.infinity,
-              color: Colors.black,
+              color: Color(0xff0B2F9F),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -56,7 +58,8 @@ class _My_DrawerState extends State<My_Drawer> {
                     backgroundImage: widget.user.isAnonymous ||
                             widget.user.photoURL == null
                         ? NetworkImage(
-                            "https://i.pinimg.com/564x/3d/91/09/3d910919cf4d41c1114457504dc29201.jpg")
+                            "https://i.pinimg.com/564x/3d/91/09/3d910919cf4d41c1114457504dc29201.jpg",
+                          )
                         : NetworkImage(widget.user.photoURL!) as ImageProvider,
                   ),
                   SizedBox(height: 10),
@@ -65,7 +68,7 @@ class _My_DrawerState extends State<My_Drawer> {
                         ? "Guest User"
                         : userName ?? 'Unknown User',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 19,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
@@ -74,8 +77,8 @@ class _My_DrawerState extends State<My_Drawer> {
                     Text(
                       "${widget.user.email}",
                       style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[400],
+                        fontSize: 15,
+                        color: Colors.white,
                       ),
                     ),
                 ],
@@ -83,7 +86,7 @@ class _My_DrawerState extends State<My_Drawer> {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.person_outline, color: Colors.grey[800]),
+            leading: Icon(Icons.person_outline),
             title: Text(
               "Edit Username",
               style: TextStyle(fontSize: 16),
@@ -95,7 +98,7 @@ class _My_DrawerState extends State<My_Drawer> {
           (widget.user.isAnonymous || isGoogle())
               ? Container()
               : ListTile(
-                  leading: Icon(Icons.lock_outline, color: Colors.grey[800]),
+                  leading: Icon(Icons.lock_outline),
                   title: Text(
                     "Change Password",
                     style: TextStyle(fontSize: 16),
@@ -104,7 +107,54 @@ class _My_DrawerState extends State<My_Drawer> {
                     showChangePasswordDialog();
                   },
                 ),
+          ListTile(
+            leading: Icon(
+              Provider.of<ThemeProvider>(context).isDarkTheme
+                  ? Icons.nightlight
+                  : Icons.wb_sunny,
+            ),
+            title: Text(
+              "Change Theme",
+              style: TextStyle(fontSize: 16),
+            ),
+            onTap: () {
+              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+            },
+          ),
           Spacer(),
+          GestureDetector(
+            onTap: () async {
+              await Auth_Helper.auth_helper.SignOutUser();
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('login_page1', (route) => false);
+            },
+            child: Container(
+              margin: EdgeInsets.all(15),
+              alignment: Alignment.center,
+              height: 60,
+              width: 280,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.exit_to_app, color: Colors.white),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    "Logout",
+                    style: TextStyle(
+                      fontSize: 17,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              decoration: BoxDecoration(
+                color: Color(0xff0B2F9F),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -135,9 +185,7 @@ class _My_DrawerState extends State<My_Drawer> {
                 usernameController.clear();
                 Navigator.of(context).pop();
               },
-              child: Text(
-                "Cancel",
-              ),
+              child: Text("Cancel"),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(

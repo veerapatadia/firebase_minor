@@ -1,11 +1,14 @@
 import 'dart:developer';
+import 'package:chat_app/provider/themeprovider.dart';
 import 'package:chat_app/views/ChatPage.dart';
 import 'package:chat_app/views/HomePage.dart';
 import 'package:chat_app/views/LoginPage.dart';
+import 'package:chat_app/views/LoginPage2.dart';
 import 'package:chat_app/views/SplashScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'helper/local_notification_helper.dart';
 
@@ -38,14 +41,36 @@ void main() async {
   });
 
   FirebaseMessaging.onBackgroundMessage(onBGFCM);
-  runApp(MaterialApp(
-    initialRoute: 'splash_screen',
-    debugShowCheckedModeBanner: false,
-    routes: {
-      'login_page': (context) => LoginPage(),
-      '/': (context) => HomePage(),
-      'chat_page': (context) => ChatPage(),
-      'splash_screen': (context) => SplashScreen(),
-    },
-  ));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ],
+      child: myApp(),
+    ),
+  );
+}
+
+class myApp extends StatelessWidget {
+  const myApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          initialRoute: 'splash_screen',
+          theme: Provider.of<ThemeProvider>(context).themeData,
+          debugShowCheckedModeBanner: false,
+          routes: {
+            '/': (context) => HomePage(),
+            'splash_screen': (context) => SplashScreen(),
+            'login_page1': (context) => LoginPage1(),
+            'login_page2': (context) => LoginPage2(),
+            'chat_page': (context) => ChatPage(),
+          },
+        );
+      },
+    );
+  }
 }

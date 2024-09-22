@@ -17,14 +17,24 @@ class _ChatPageState extends State<ChatPage> {
   TextEditingController editController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> receiverEmail =
+    Map<String, dynamic> receiverData =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String receiverEmail = receiverData['email'];
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
-        backgroundColor: Colors.black54,
+        backgroundColor: Color(0xff0B2F9F),
         centerTitle: true,
-        title: (receiverEmail['email'] ==
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: (receiverData['email'] ==
                 Auth_Helper.firebaseAuth.currentUser!.email)
             ? Text(
                 "Chat Page\nYou",
@@ -33,7 +43,10 @@ class _ChatPageState extends State<ChatPage> {
             : Text(
                 "Chat Page\n$receiverEmail",
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
               ),
       ),
       body: Column(
@@ -44,7 +57,7 @@ class _ChatPageState extends State<ChatPage> {
               padding: EdgeInsets.all(16),
               child: FutureBuilder(
                 future: FireStoreHelper.fireStoreHelper
-                    .fetchAllMessages(receiverEmail: receiverEmail['email']),
+                    .fetchAllMessages(receiverEmail: receiverData['email']),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Center(child: Text("ERROR : ${snapshot.error}"));
@@ -73,7 +86,7 @@ class _ChatPageState extends State<ChatPage> {
                                   itemBuilder: (context, i) {
                                     return Row(
                                       mainAxisAlignment:
-                                          (receiverEmail['email'] !=
+                                          (receiverData['email'] !=
                                                   allMessages[i]
                                                       .data()['receiverEmail'])
                                               ? MainAxisAlignment.start
@@ -87,7 +100,7 @@ class _ChatPageState extends State<ChatPage> {
                                                 builder: (context) {
                                                   return AlertDialog(
                                                     title: const Text(
-                                                      "Are you sure",
+                                                      "Are you sure?",
                                                     ),
                                                     actions: [
                                                       ElevatedButton(
@@ -104,7 +117,7 @@ class _ChatPageState extends State<ChatPage> {
                                                               .fireStoreHelper
                                                               .deleteMessage(
                                                                   receiverEmail:
-                                                                      receiverEmail[
+                                                                      receiverData[
                                                                           'email'],
                                                                   messageDocId:
                                                                       allMessages[
@@ -161,7 +174,7 @@ class _ChatPageState extends State<ChatPage> {
                                                             msg: editController
                                                                 .text,
                                                             receiverEmail:
-                                                                receiverEmail[
+                                                                receiverData[
                                                                     'email'],
                                                             messageDocId:
                                                                 allMessages[i]
@@ -221,7 +234,7 @@ class _ChatPageState extends State<ChatPage> {
             flex: 2,
             child: Container(
               alignment: Alignment.center,
-              padding: EdgeInsets.all(12),
+              margin: EdgeInsets.all(8),
               child: TextField(
                 controller: chatController,
                 decoration: InputDecoration(
@@ -232,7 +245,7 @@ class _ChatPageState extends State<ChatPage> {
                       String msg = chatController.text;
                       await FireStoreHelper.fireStoreHelper.sendMessage(
                         msg: msg,
-                        receiverEmail: receiverEmail['email'],
+                        receiverEmail: receiverData['email'],
                       );
                       chatController.clear();
                       await FirebaseMessaging.instance.getToken();
@@ -240,7 +253,7 @@ class _ChatPageState extends State<ChatPage> {
                         msg: msg,
                         senderEmail:
                             Auth_Helper.firebaseAuth.currentUser!.email!,
-                        token: receiverEmail['token'],
+                        token: receiverData['token'],
                       );
                     },
                     icon: Icon(Icons.send),

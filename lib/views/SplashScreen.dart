@@ -15,31 +15,76 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashScreen> createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  late Timer timer;
+class SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+  late Animation<double> animation;
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
-    timer = Timer.periodic(
-      const Duration(seconds: 3),
-      (timer) {
-        (FirebaseAuth.instance.currentUser != null)
+
+    controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    )..repeat(reverse: true);
+
+    animation = Tween<double>(begin: 0, end: -50).animate(
+      CurvedAnimation(
+        parent: controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    timer = Timer(
+      Duration(seconds: 3),
+      () {
+        FirebaseAuth.instance.currentUser != null
             ? Navigator.of(context).pushReplacementNamed("/")
-            : Navigator.of(context).pushReplacementNamed("login_page");
-        timer.cancel();
+            : Navigator.of(context).pushReplacementNamed("login_page1");
       },
     );
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
+    return Scaffold(
+      body: Stack(
+        alignment: Alignment(0, 0.85),
+        children: [
+          Center(
+            child: AnimatedBuilder(
+              animation: animation,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(0, animation.value), // Bounce effect
+                  child: Image.asset(
+                    "assets/chat-icon.png",
+                    height: 135,
+                  ),
+                );
+              },
+            ),
+          ),
+          Text(
+            "Chat App",
+            style: TextStyle(
+              fontSize: 25,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }

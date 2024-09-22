@@ -43,6 +43,7 @@ dependencies:
   permission_handler:
   flutter_timezone:
   firebase_messaging:
+  provider:
   googleapis_auth:
   http:
 

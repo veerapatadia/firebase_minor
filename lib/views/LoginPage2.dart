@@ -1,43 +1,22 @@
-import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../helper/Auth_Helper.dart';
-import '../helper/fcm_notification_helper.dart';
 import '../helper/firestore_helper.dart';
 
-class LoginPage1 extends StatefulWidget {
-  const LoginPage1({super.key});
+class LoginPage2 extends StatefulWidget {
+  const LoginPage2({super.key});
 
   @override
-  State<LoginPage1> createState() => _LoginPage1State();
+  State<LoginPage2> createState() => _LoginPage2State();
 }
 
-class _LoginPage1State extends State<LoginPage1> {
-  final GlobalKey<FormState> signInFormKey = GlobalKey<FormState>();
+class _LoginPage2State extends State<LoginPage2> {
+  final GlobalKey<FormState> signUpFormKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   String? email;
   String? password;
   // String? token;
-
-  Future<void> getFCMToken() async {
-    await FCMNotificationHelper.fcmNotification.fetchFCmToken();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getFCMToken();
-    requestPermission();
-  }
-
-  Future<void> requestPermission() async {
-    PermissionStatus notificationPermissionStatus =
-        await Permission.notification.request();
-    log("=================");
-    log("${notificationPermissionStatus}");
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,12 +26,12 @@ class _LoginPage1State extends State<LoginPage1> {
         alignment: Alignment.center,
         child: SingleChildScrollView(
           child: Form(
-            key: signInFormKey,
+            key: signUpFormKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Welcome!",
+                  "Hello!",
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -60,7 +39,7 @@ class _LoginPage1State extends State<LoginPage1> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  "Sign in to continue",
+                  "Create a new account",
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.grey,
@@ -127,24 +106,31 @@ class _LoginPage1State extends State<LoginPage1> {
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    if (signInFormKey.currentState!.validate()) {
-                      signInFormKey.currentState!.save();
+                    if (signUpFormKey.currentState!.validate()) {
+                      signUpFormKey.currentState!.save();
 
                       Map<String, dynamic> res = await Auth_Helper.auth_helper
-                          .signInWithEmailAndPassword(
+                          .signUpWithEmailAndPassword(
                               email: email!, password: password!);
 
                       if (res['user'] != null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text("Signed in successfully."),
+                            content: Text("Sign up Successfully..."),
                             backgroundColor: Colors.green,
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
+                        User user = res['user'];
+
+                        await FireStoreHelper.fireStoreHelper
+                            .addAuthenticatedUser(email: user.email!);
+
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/', (route) => false,
-                            arguments: res['user']);
+                          '/',
+                          (route) => false,
+                          arguments: res['user'],
+                        );
                       } else if (res['error'] != null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -157,14 +143,12 @@ class _LoginPage1State extends State<LoginPage1> {
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text("Sign in failed."),
+                            content: Text("Sign in Failed..."),
                             backgroundColor: Colors.red,
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
-                        Navigator.of(context).pop();
                       }
-
                       emailController.clear();
                       passwordController.clear();
                       email = null;
@@ -180,7 +164,7 @@ class _LoginPage1State extends State<LoginPage1> {
                     ),
                   ),
                   child: Text(
-                    "LOGIN",
+                    "SIGN UP",
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
@@ -287,31 +271,6 @@ class _LoginPage1State extends State<LoginPage1> {
                           );
                         }
                       },
-                    ),
-                  ],
-                ),
-                SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don't have an account?",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed('login_page2');
-                      },
-                      child: Text(
-                        "Sign up",
-                        style: TextStyle(
-                          // color: Color(0xFF556080),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                     ),
                   ],
                 ),

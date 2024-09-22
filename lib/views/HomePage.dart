@@ -21,26 +21,28 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "HomePage",
+          "Messages",
           style: TextStyle(
-            color: Colors.white,
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        centerTitle: true,
-        backgroundColor: Colors.black54,
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await Auth_Helper.auth_helper.SignOutUser();
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil('login_page', (routs) => false);
-            },
-            icon: Icon(
-              Icons.power_settings_new,
-              color: Colors.white,
-            ),
-          ),
-        ],
+        centerTitle: false,
+
+        elevation: 0,
+        //actions: [
+        // IconButton(
+        //   onPressed: () async {
+        //     await Auth_Helper.auth_helper.SignOutUser();
+        //     Navigator.of(context)
+        //         .pushNamedAndRemoveUntil('login_page', (routs) => false);
+        //   },
+        //   icon: Icon(
+        //     Icons.power_settings_new,
+        //     color: Colors.black,
+        //   ),
+        // ),
+        // ],
       ),
       drawer: (user == null)
           ? Drawer()
@@ -66,23 +68,48 @@ class _HomePageState extends State<HomePage> {
                 );
               },
               itemBuilder: (context, i) {
+                var userEmail = allDocs[i].data()['email'];
+                var firstLetter = userEmail[0].toUpperCase();
+
+                var photoUrl = allDocs[i].data()['photoUrl'];
                 return ListTile(
-                  leading: CircleAvatar(radius: 20),
+                  leading: CircleAvatar(
+                    radius: 25,
+                    backgroundColor: Color(0xff0B2F9F),
+                    child: (photoUrl != null && photoUrl.isNotEmpty)
+                        ? ClipOval(
+                            child: Image.network(
+                              photoUrl,
+                              fit: BoxFit.cover,
+                              width: 50,
+                              height: 50,
+                            ),
+                          )
+                        : Text(
+                            firstLetter,
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
                   title: (Auth_Helper.firebaseAuth.currentUser!.email ==
                           allDocs[i].data()['email'])
-                      ? Text("You(${allDocs[i].data()['email']})")
+                      ? Text("${allDocs[i].data()['email']} (You)")
                       : Text("${allDocs[i].data()['email']}"),
                   onTap: () {
                     Navigator.of(context)
                         .pushNamed('chat_page', arguments: allDocs[i].data());
                   },
-                  // trailing: IconButton(
-                  //   icon: Icon(Icons.delete),
-                  //   onPressed: () async {
-                  //     await FireStoreHelper.fireStoreHelper
-                  //         .deleteUser(docId: allDocs[i].id);
-                  //   },
-                  // ),
+                  subtitle: Text(
+                    "",
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  trailing: Text(
+                    "1212",
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
                 );
               },
             );
