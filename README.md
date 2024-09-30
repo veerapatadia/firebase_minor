@@ -2,7 +2,7 @@
 
 ## Project Description
 
-Welcome to Chat App—a versatile messaging platform designed for seamless communication and user-friendly interaction.
+Welcome to Connect App—a versatile messaging platform designed for seamless communication and user-friendly interaction.
 
 Key Features:
 Sign In & Sign Up: Easily create an account or log in to your existing account with a simple and secure sign-in process.
@@ -23,9 +23,9 @@ Splash Screen Animation: Experience a captivating splash screen animation that e
 
 User Profiles: Personalize your experience with user profiles, showcasing your information and making connections more meaningful.
 
-Chat App is built for users who value flexibility, security, and an intuitive interface. Join us and experience chatting like never before!
+Connect App is built for users who value flexibility, security, and an intuitive interface. Join us and experience chatting like never before!
 
-![1](https://github.com/user-attachments/assets/cf485e6b-40c8-41e5-91e1-097c0e84c847)
+![db](https://github.com/user-attachments/assets/4527c5db-ce13-403b-a0f6-8e9f66b7d6d8)
 ![2](https://github.com/user-attachments/assets/9ee55ee9-289f-4288-afb8-090b59f79aa9)
 ![3](https://github.com/user-attachments/assets/ae343662-10cb-4492-beb4-3c21522eafa5)
 ![4](https://github.com/user-attachments/assets/02560954-21dc-4417-9dc1-43fad2bbd1c3)
