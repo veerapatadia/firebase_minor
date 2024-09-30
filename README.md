@@ -1,4 +1,4 @@
-# chat_app
+# connect_App
 
 ## Project Description
 
